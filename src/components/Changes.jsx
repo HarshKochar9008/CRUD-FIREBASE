@@ -15,7 +15,7 @@ const Changes = ({ isOpen, onClose, isUpdate, contact }) => {
   const addContact = async (contact) => {
     try {
       const contactRef = collection(db, "contacts");
-      await addDoc(contactRef, contact);
+      await addDoc(contactRef, { ...contact, isFavorite: false });
       onClose();
       toast.success("Contact added successfully");
     } catch (error) {
@@ -35,49 +35,52 @@ const Changes = ({ isOpen, onClose, isUpdate, contact }) => {
   return (
     <div>
       <Modal isOpen={isOpen} onClose={onClose}>
-        <Formik
-          validationSchema={ContactSchema}
-          initialValues={
-            isUpdate
-              ? { name: contact.name, email: contact.email }
-              : { name: "", email: "" }
-          }
-          onSubmit={(values) => {
-            isUpdate ? updateContact(values, contact.id) : addContact(values);
-          }}
-        >
-          <Form className="flex flex-col gap-4">
-            <div className="flex flex-col px-2 gap-1">
-              <label htmlFor="name">Name</label>
-              {/* Remove the border class from here */}
-              <Field
-                name="name"
-                className="h-10 px-2 rounded-md outline-none focus:ring-2 focus:ring-orange-500"
-              />
-              <div className="text-red-500 text-s">
-                <ErrorMessage name="name" />
+        <div className="p-2">
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">{isUpdate ? "Update Contact" : "Add New Contact"}</h2>
+          <Formik
+            validationSchema={ContactSchema}
+            initialValues={
+              isUpdate
+                ? { name: contact.name, email: contact.email }
+                : { name: "", email: "" }
+            }
+            onSubmit={(values) => {
+              isUpdate ? updateContact(values, contact.id) : addContact(values);
+            }}
+          >
+            <Form className="flex flex-col gap-5">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="name" className="text-white/80 font-medium">Name</label>
+                <Field
+                  name="name"
+                  className="h-12 px-4 rounded-xl bg-white/10 border border-white/20 text-white outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                  placeholder="Enter name"
+                />
+                <div className="text-red-400 text-sm h-4">
+                  <ErrorMessage name="name" />
+                </div>
               </div>
-            </div>
-            <div className="flex flex-col px-2 gap-1">
-              <label htmlFor="email">Email</label>
-              {/* Remove the border class from here */}
-              <Field
-                type="email"
-                name="email"
-                className="h-10 px-2 rounded-md outline-none focus:ring-2 focus:ring-orange-500"
-              />
-              <div className="text-red-500 text-s">
-                <ErrorMessage name="email" />
+              <div className="flex flex-col gap-2">
+                <label htmlFor="email" className="text-white/80 font-medium">Email</label>
+                <Field
+                  type="email"
+                  name="email"
+                  className="h-12 px-4 rounded-xl bg-white/10 border border-white/20 text-white outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                  placeholder="Enter email"
+                />
+                <div className="text-red-400 text-sm h-4">
+                  <ErrorMessage name="email" />
+                </div>
               </div>
-            </div>
-            <button
-              type="submit"
-              className="bg-blue text-white h-14 rounded-md"
-            >
-              {isUpdate ? "Update" : "Add"} Contact
-            </button>
-          </Form>
-        </Formik>
+              <button
+                type="submit"
+                className="mt-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white h-12 rounded-xl font-bold shadow-lg hover:shadow-purple-500/30 transition-all transform hover:scale-[1.02]"
+              >
+                {isUpdate ? "Update" : "Add"} Contact
+              </button>
+            </Form>
+          </Formik>
+        </div>
       </Modal>
     </div>
   );
